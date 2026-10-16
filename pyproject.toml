@@ -1,0 +1,93 @@
+[build-system]
+# PEP 639 `license`/`license-files` below need hatchling 1.27 or newer.
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pathapi-httpx"
+version = "0.1.0"
+authors = [{ name = "Jose A" }]
+description = "The httpx HTTP transports for pathapi: a synchronous one and a native async one, with HTTP/2, your own httpx client and its mounts"
+readme = "README.md"
+requires-python = ">=3.9"
+# PEP 639: SPDX license expression plus the file it refers to. This replaces
+# the legacy `License ::` classifier; do not list one alongside it.
+license = "MIT"
+license-files = ["LICENSE"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Operating System :: OS Independent",
+    # src/pathapi_httpx/py.typed ships in the wheel.
+    "Typing :: Typed",
+]
+dependencies = [
+    # 0.1.2 adds AsyncHTTPClient and the async transport contract.
+    "pathapi>=0.1.2,<0.2",
+    # 0.28.0 removed the deprecated `proxies=`, `app=` and `verify=<str>` of
+    # the 0.27 series and sets the `verify=`, `cert=` and `proxy=` arguments
+    # that `client_args` passes on.
+    "httpx>=0.28.0,<0.29",
+]
+
+[project.optional-dependencies]
+dev = [
+    'build',
+    'twine',
+    'hatchling',
+    'pytest',
+    'pytest-cov',
+    'cryptography',
+    'black',
+]
+docs = ['mkdocs', 'mkdocs-material', 'mkdocstrings[python]']
+
+# The HTTP transports `pathapi.http` can send through. The value is a class that
+# is built with no arguments; `pathapi.http.transport_names()` and
+# `pathapi.http.async_transport_names()` list them without importing this
+# package.
+[project.entry-points."pathapi.http_transports"]
+httpx = "pathapi_httpx:HttpxTransport"
+
+[project.entry-points."pathapi.http_async_transports"]
+httpx = "pathapi_httpx:AsyncHttpxTransport"
+
+[project.urls]
+Homepage = "https://github.com/jose-pr/pathapi-httpx/"
+Documentation = "https://jose-pr.github.io/pathapi-httpx/"
+Issues = "https://github.com/jose-pr/pathapi-httpx/issues"
+
+# Ship the consumer-facing docs inside the installed package, so they are
+# readable from site-packages via importlib.resources without the repo.
+# src/pathapi_httpx/AGENTS.md (the API header) is included automatically
+# by living in the package dir. The repo-root AGENTS.md is contributor
+# orientation for a checkout and is not part of the wheel.
+[tool.hatch.build.targets.wheel.force-include]
+"README.md" = "pathapi_httpx/README.md"
+
+# `*.local.*` files are per-machine overrides and `CLAUDE*` is agent config:
+# neither is ever packaged (both are also gitignored). `/.*` does not match
+# them, since their names do not start with a dot.
+[tool.hatch.build.targets.sdist]
+exclude = ["/.*", "/AGENTS.md", "/benchmarks", "*.local.*", "CLAUDE*"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pathapi_httpx"]
+exclude = ["*.local.*", "CLAUDE*"]
+
+[tool.black]
+# Pinned to the project's *minimum* supported Python so black never emits
+# syntax the 3.9 floor cannot parse.
+target-version = ["py39"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+filterwarnings = ["error"]
+xfail_strict = true
