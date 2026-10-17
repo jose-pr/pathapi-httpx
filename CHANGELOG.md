@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-10-17
+
 ### Added
 
 - `pathapi_httpx.HttpxTransport` and `pathapi_httpx.AsyncHttpxTransport`, the
@@ -25,4 +27,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   (`python -m pathapi.http.testing --http-transports httpx --http-async-transports httpx`)
   as part of the test suite.
 
-[Unreleased]: https://github.com/jose-pr/pathapi-httpx/commits/main
+[Unreleased]: https://github.com/jose-pr/pathapi-httpx/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/jose-pr/pathapi-httpx/releases/tag/v0.1.0
